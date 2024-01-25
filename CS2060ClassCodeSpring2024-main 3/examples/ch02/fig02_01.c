@@ -4,8 +4,45 @@
 
 // function main begins program execution 
 int main(void) {
-   printf("Welcome to C!\n");
-} // end function main 
+   //printf("Welcome to C!\n");
+    int length;
+    int width;
+    int area;
+    int scanfReturn;
+    
+    
+    printf("%s","Enter the length: ");
+    scanfReturn = scanf("%d", &length);
+    getchar(); // clear buffer
+    
+    // get valid length input
+    while (scanfReturn != 1) {
+        printf("%s","Enter an integer for length: ");
+        scanfReturn = scanf("%d", &length);
+        getchar(); // clear buffer
+        
+    }
+    
+    // get width input
+    printf("%s","Enter the width: ");
+    scanf("%d", &width);
+    
+    area = length * width;
+    
+    printf("Length: %d , Width: %d, Area: %d\n", length, width, area);
+    
+    // get average of length & width
+    double average = (double)(length * width) / 2;
+    
+    // display to 1 decimal
+    printf("Average: %.1f", average);
+    printf("\n");
+    
+    return 0;
+    
+} // end function main
+
+
 
 
 
