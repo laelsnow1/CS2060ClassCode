@@ -2,7 +2,10 @@
 // A first program in C.
 #include <stdio.h>
 
-// function main begins program execution 
+// function declaration
+void calculateArea (int length, int width);
+
+// function main begins program execution
 int main(void) {
    //printf("Welcome to C!\n");
     int length;
@@ -27,9 +30,13 @@ int main(void) {
     printf("%s","Enter the width: ");
     scanf("%d", &width);
     
-    area = length * width;
+    calculateArea(length,width);
     
-    printf("Length: %d , Width: %d, Area: %d\n", length, width, area);
+    
+    
+    // area = length * width;
+    
+    // printf("Length: %d , Width: %d, Area: %d\n", length, width, area);
     
     // get average of length & width
     double average = (double)(length * width) / 2;
@@ -42,7 +49,13 @@ int main(void) {
     
 } // end function main
 
-
+// Area function 
+void calculateArea(int x, int y){
+    
+    int area = x * y;
+    printf("Area is %d ", area);
+    return;
+}
 
 
 
@@ -60,3 +73,5 @@ int main(void) {
  * consequential damages in connection with, or arising out of, the       *
  * furnishing, performance, or use of these programs.                     *
  *************************************************************************/
+
+
