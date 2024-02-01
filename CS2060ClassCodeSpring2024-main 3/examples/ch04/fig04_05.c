@@ -1,5 +1,6 @@
 // fig04_05.c
 // Counting letter grades with switch.
+// Lael Snow
 #include <stdio.h>
 
 int main(void) {
