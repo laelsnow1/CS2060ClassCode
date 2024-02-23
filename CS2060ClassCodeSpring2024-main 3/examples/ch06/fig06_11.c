@@ -4,6 +4,7 @@
 #define SIZE 5
 
 // function prototypes
+void displayArray(int b[], size_t length);
 void modifyArray(int b[], size_t size); 
 void modifyElement(int e);              
  
@@ -54,6 +55,13 @@ void modifyElement(int e) {
    printf("Value in modifyElement is %d\n", e);            
 } 
 
+void displayArray(int b[], size_t length){
+    // output original array
+    for (size_t i = 0; i < length; i++) {
+       printf("%3d", b[i]);
+    }
+    printf("\n");
+}
 
 
 /**************************************************************************
