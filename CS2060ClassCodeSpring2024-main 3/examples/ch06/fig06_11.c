@@ -6,19 +6,23 @@
 // function prototypes
 void displayArray(int b[], size_t length);
 void modifyArray(int b[], size_t size); 
-void modifyElement(int e);              
- 
+void modifyElement(int e);
+
 // function main begins program execution
 int main(void) {
    int a[SIZE] = {0, 1, 2, 3, 4}; // initialize array a
+    
+    // Addresses of array and the first element of the element
+    puts("Address of array and the first element of the element");
+    printf("a = %p\n&a[0] = %p\n&a = %p\n\n",
+           a, &a[0], &a);
+    
 
    puts("Effects of passing entire array by reference:\n\nThe "
       "values of the original array are:");
 
    // output original array
-   for (size_t i = 0; i < SIZE; ++i) { 
-      printf("%3d", a[i]);
-   } 
+    displayArray(a, SIZE);
 
    puts(""); // outputs a newline
 
