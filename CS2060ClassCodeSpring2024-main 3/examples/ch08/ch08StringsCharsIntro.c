@@ -18,8 +18,8 @@ int main(void)
 {
 
 	//reviewChar();
-	exploreStringCharArray();
-	//arrayPointerString();
+	//exploreStringCharArray();
+	arrayPointerString();
 
 	return 0;
 }
@@ -29,13 +29,14 @@ int main(void)
 void exploreStringCharArray(void)
 {
 
-	char string1[] = "string1 C";
-	char string2a[] = { 'S', 't', 'r', 'i', 'n', 'g', '2', ' ', 'C' }; 
+	char string1[] = "string1 C"; // didnt have to declare its size , but used double quotes, stores a null character
+	char string2a[] = { 'S', 't', 'r', 'i', 'n', 'g', '2', ' ', 'C' };  // doesnt store a null character, its going to cause problems. C relys on null
 	char string2b[] = { 'S', 't', 'r', 'i', 'n', 'g', '2', ' ', 'C', '\0'};
-	char string3[10] = { " " };
-	char* string1Ptr = string1;
-	char* string3Ptr = string3;
+	char string3[10] = { " " }; // null character automatically
+	char* string1Ptr = string1;  // dont declare like this
+    char* string3Ptr = string3;
 	char* string4Ptr = "String4Ptr C";
+    
 	
 	printf("string1[] = %s\n", string1);
 	printf("string1[0] = %c\n", string1[0]);
@@ -47,13 +48,13 @@ void exploreStringCharArray(void)
 	printf("*string4Ptr = %s\n\n", string4Ptr);
 
 	printf("%s", "Enter a string 9 characters or less into string3: ");
-	scanf("%9s", string3);
+	//scanf("%9s", string3);
 	printf("string3[] = %s\n", string3);
 	printf("*string3Ptr = %s\n\n", string3Ptr);
 
 	/*comment this function out after you see what happens and run again*/
 	puts("See what happens when the next function is called. Then comment this function.");
-	testStringOverflow();
+	//testStringOverflow();
 
 	/*Comment the next  lines of code after you see what happens here and with the next scanf */
 	puts("See what happens when the following overslow is scanned and what happens with next scanf");
@@ -76,7 +77,7 @@ void exploreStringCharArray(void)
 
 	/*comment the following code when you see what happens */
 	printf("%s", "Enter a string into  string4Ptrthat is 9 char or less: ");
-	scanf("%9s", string4Ptr);
+	//scanf("%9s", string4Ptr);
 	printf("*string4Ptr = %s\n\n", string4Ptr); 
 
 
@@ -103,8 +104,8 @@ void testStringOverflow(void)
 void arrayPointerString(void)
 {
 	// add comment 
-	char suitArray[4][9] = {"Hearts", "Diamonds", "Clubs", "Spades"};
-	const char *suitPtr[4] = {"Hearts", "Diamonds", "Clubs", "Spades"};	
+	char suitArray[4][9] = {"Hearts", "Diamonds", "Clubs", "Spades"}; // Store a 2D array, create enough room for null thats why there is a 9
+	const char *suitPtr[4] = {"Hearts", "Diamonds", "Clubs", "Spades"};	//
 	
 	// add comment 
 	printf ("*suitPtr size_of    = %zu\n", sizeof(*suitPtr));
