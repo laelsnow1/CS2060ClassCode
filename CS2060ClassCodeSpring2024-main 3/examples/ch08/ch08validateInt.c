@@ -17,12 +17,15 @@ int main(void)
 {
 	char inputStr[LENGTH]; // create char array
 
+    exploreValidateInt("3");
+    exploreValidateInt("4f");
+    
     printLimits();
 
 	for (unsigned int counter = 1; counter < 6; counter++)
 	{
 		puts("\nEnter an integer");
-		fgets(inputStr, LENGTH, stdin);
+		fgets(inputStr, LENGTH, stdin); // rewrite fgets function to get the null character
 
 		exploreValidateInt(inputStr);
 	}
