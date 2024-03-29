@@ -12,21 +12,23 @@
 void  exploreValidateInt(const char* buff);
 bool validateInt(char* buff, int* const validInt);
 void printLimits(void);
+void getNullCharacter(char *str, int length);
 
 int main(void)
 {
 	char inputStr[LENGTH]; // create char array
 
-    exploreValidateInt("3");
-    exploreValidateInt("4f");
+   // exploreValidateInt("3");
+  //  exploreValidateInt("4f");
     
     printLimits();
 
 	for (unsigned int counter = 1; counter < 6; counter++)
 	{
-		puts("\nEnter an integer");
-		fgets(inputStr, LENGTH, stdin); // rewrite fgets function to get the null character
-
+        getNullCharacter(inputStr, LENGTH);
+		//puts("\nEnter an integer");
+		//fgets(inputStr, LENGTH, stdin); // rewrite fgets function to get the null character
+       // removeNullTerminator(inputStr);
 		exploreValidateInt(inputStr);
 	}
 
@@ -81,4 +83,20 @@ void  exploreValidateInt(const char* buff)
 		validInt = (int)intTest;
 		printf("%d is integer value ", validInt);
 	}
+}
+
+
+
+void getNullCharacter(char *str, int length){
+    
+    puts("\nEnter an integer");
+    fgets(str, LENGTH, stdin);
+    
+    size_t strLength = strlen(str); // get the length of the string being passed
+    
+    if(strLength > 0 && str[strLength - 1] == '\n'){
+        str[strLength - 1] = '\0';
+    }
+    
+    
 }
