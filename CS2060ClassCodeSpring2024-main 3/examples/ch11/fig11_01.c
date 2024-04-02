@@ -3,10 +3,10 @@
 #include <stdio.h>
 
 int main(void){
-   FILE *cfPtr = NULL; // cfPtr = clients.txt file pointer   
+   FILE *cfPtr = NULL; // cfPtr = clients.txt file pointer  , enough memory to store an address
 
    // fopen opens the file. Exit the program if unable to create the file 
-   if ((cfPtr = fopen("/Users/debteach/Desktop/cFiles/clients.txt", "w")) == NULL) {
+   if ((cfPtr = fopen("/Users/laelsnow/Desktop/cFile/clients.txt", "a")) == NULL) {
       puts("File could not be opened");
    } 
    else { 
@@ -18,11 +18,13 @@ int main(void){
       char name[30] = ""; // account name
       double balance = 0.0; // account balance
 
+
+
       scanf("%d%29s%lf", &account, name, &balance);
 
       // write account, name and balance into file with fprintf
-      while (!feof(stdin)) { 
-         fprintf(cfPtr, "%d %s %.2f\n", account, name, balance);
+      while (!feof(stdin)) {  // if its not the EOF from the key board input.
+         fprintf(cfPtr, "%d %s %.2f\n", account, name, balance); // passing the info to the file with the pointer.
          printf("%s", "? ");
          scanf("%d%29s%lf", &account, name, &balance);
       } 
