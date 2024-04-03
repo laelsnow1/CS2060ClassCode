@@ -5,14 +5,14 @@
 //  Created by lael Snow on 3/7/24.
 //
 
-#include "Snow_iter02.h"
+///#include "Snow_iter02.h"
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
 #include <time.h>
 #include <stdlib.h>
 
-#define SIZE 80
+#define STRING_LENGTH 80
 #define MAX_SET_UP 50.0
 #define MIN_SET_UP 0.1
 #define MAX_ATTEMPTS 4
@@ -240,15 +240,14 @@ double getValidDouble(int min, int max, int sentinel) {
 
 int adminLogin(void){
     
-    char correctID[] = "id1";
-    char correctPW[] = "abcd";
+    char userId[] = [STRING_LENGTH];
+    char userPw[] = [STRING_LENGTH];
     
     int counter = 1;
     int validInput = 0;
     
     puts("Admin Login");
-        char id[SIZE];
-        char pw[SIZE];
+       
         
     while (!validInput) {
             puts("Enter your Admin ID");
