@@ -99,7 +99,6 @@ int main(int argc, const char * argv[]) {
         //User Story2: Admin RideShare Set up
         setUpRideShare(&rideShareInfo);
         
-        
         // 2.1 - 2.6 get info, name, and rideshare details
         ridersMode(&rideShareInfo);
         
@@ -115,7 +114,6 @@ int main(int argc, const char * argv[]) {
         puts("\nEnter your RideShare Organization Name");
         getchar();
         fgets(rideShareName, STRING_LENGTH, stdin);
-
         
         // Display Rideshare details
         printInfo(rideShareName, baseFare, costPerMin, costPerMile, minFlatRate);
@@ -125,7 +123,7 @@ int main(int argc, const char * argv[]) {
         // end program
         return 0;
          */
-    }
+    }// end of admin login
     
     
     
