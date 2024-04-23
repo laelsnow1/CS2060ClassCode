@@ -159,7 +159,8 @@ void deleteNode(Node** headPtr, int numberToDelete)
 	// 
 	if (*headPtr != NULL)
 	{
-		if ((*headPtr)->data == numberToDelete)
+        // check if head is not NULL then check if it is a match  
+		if ((*headPtr != NULL) && (*headPtr)->data == numberToDelete)
 		{
 			//
 			*headPtr = (*headPtr)->nextNodePtr;
@@ -293,6 +294,7 @@ void exploreDoublePointers(void)
 	printf("Value stored at another pointer **doublenPtr =  %d\n", **doublenPtr);
 
 }
+
 
 
 
