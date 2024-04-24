@@ -66,7 +66,7 @@ int calculateRandomNumber(int min, int max); // need
 void setUpRideShare (rideShare *rideSharePtr);
 double getValidDouble(double min, double max);
 void displayRideShareRatings(unsigned int *surveyCount, const unsigned int survey[][SURVEY_CATEGORIES], rideShare *rideSharePtr);
-void getRideShareRatings(unsigned int survey[][SURVEY_CATEGORIES], unsigned int *surveyCount, size_t total_categories);
+void getRideShareRatings(unsigned int survey[][SURVEY_CATEGORIES], unsigned int *surveyCount);
 void ridersMode(rideShare *rideSharePtr);
 double calculateFare(rideShare *rideSharePtr); // need
 void getRatings(unsigned int rentalSurvey[][SURVEY_CATEGORIES ], unsigned int *ridersCount, const char *surveyCategories[]);
@@ -86,21 +86,39 @@ int main(int argc, const char * argv[]) {
     // seed for the random generator with current time
        srand((unsigned int) time(NULL));
     
-    rideShare rideShareInfo;
+     rideShare rideShareInfo;
     
     
+    // STEP 1:
+    // 1.1 get valid id and pw
+    if( adminLogin()) {
+        printf("Login Successful\n\n");
+        
+        // user 2 admin Ride Share set up
+        setUpRideShare(&rideShareInfo);
+        
+    } else {
+        printf("Exiting RideShare\n");
+        // end program
+        return 0;
+    }
     
+    // USER STORY 3. Riders mode
+    //printf("Welcome to the %s. We can only provide services for rides from 1 to 100 miles.\n", rideShareInfo.organizationName);
+  
+    //3.1 Rider mode
+    ridersMode(&rideShareInfo);
 
     // STEP 1:
     // 1.1 get valid id and pw
-    if(adminLogin()) { // if success go to user story 2
-        printf("Login Successful\n\n");
+   // if(adminLogin()) { // if success go to user story 2
+        //printf("Login Successful\n\n");
         
         //User Story2: Admin RideShare Set up
-        setUpRideShare(&rideShareInfo);
+       // setUpRideShare(&rideShareInfo);
         
         // 2.1 - 2.6 get info, name, and rideshare details
-        ridersMode(&rideShareInfo);
+      //  ridersMode(&rideShareInfo);
         
         /*
         puts("\nSetup RideShare Info: ");
@@ -123,7 +141,7 @@ int main(int argc, const char * argv[]) {
         // end program
         return 0;
          */
-    }// end of admin login
+   // }// end of admin login
     
     
     
@@ -133,21 +151,21 @@ int main(int argc, const char * argv[]) {
     
     // ZERO SURVEYS TO BEGIN WITH
     
-    printf("Welcome to the %s. We can only provide services for rides from 1 to 100 miles.", rideShareInfo.organizationName);
-    puts("");
-    displayRideShareRatings(&rideShareInfo.surveyCount, rideShareInfo.rentalSurvey, &rideShareInfo);
-   // displayRideShareInfo(rideShareName, surveyCategories, SURVEY_CATEGORIES, 4);
+  //  printf("Welcome to the %s. We can only provide services for rides from 1 to 100 miles.", rideShareInfo.organizationName);
+   // puts("");
+   // displayRideShareRatings(&rideShareInfo.surveyCount, rideShareInfo.rentalSurvey, &rideShareInfo);
+   //// displayRideShareInfo(rideShareName, surveyCategories, SURVEY_CATEGORIES, 4);
     
   
     // Prompt
-    printf("Do you want to request a ride from %s \n", rideShareInfo.organizationName);
+   // printf("Do you want to request a ride from %s \n", rideShareInfo.organizationName);
     
-    char choice = getValidYN();
-    if (choice == 'n') {
+   // char choice = getValidYN();
+   // if (choice == 'n') {
         // go back to 3.1
-        displayRideShareRatings(&rideShareInfo.surveyCount, rideShareInfo.rentalSurvey , &rideShareInfo);
+       // displayRideShareRatings(&rideShareInfo.surveyCount, rideShareInfo.rentalSurvey , &rideShareInfo);
        // displayRideShareInfo(rideShareName, surveyCategories, SURVEY_CATEGORIES, 4);
-    } else { //'y'
+  //  } else { //'y'
         // go to 3.3
        
         
@@ -205,7 +223,7 @@ int main(int argc, const char * argv[]) {
             }
                     }
          */
-        }
+        
         
         
     
@@ -361,7 +379,7 @@ void setUpRideShare (rideShare *rideSharePtr){
     rideSharePtr->surveyCount = 0;
     
     // display ride share details
-    printf("\nRideshare details");
+    printf("\nRideshare details\n");
     printf("%s", rideSharePtr -> organizationName);
     printf("Base fare: %.2f\n", rideSharePtr -> baseFare);
     printf("Cost Per Minute: %.2f\n", rideSharePtr -> costPerMinute);
@@ -411,37 +429,21 @@ void printSurveyResults (int rentalSurvey[][SURVEY_CATEGORIES ], int rentersCoun
 }
 // couldnt get to work in enough time 
 char getValidYN(void){
-    char input [2]; // enough space for a char and null
-    int validInput = 0;
     
-    while(!validInput){
-        puts("Enter y or n");
-        //input = getchar();
-        fgets(&input[0], sizeof(input), stdin);
-        
-       // fgetsRemoveNewLine(input);
-        
-        // Clear input buffer
-        //int c;
-       // while ((c= getchar()) != '\n' && c != EOF);
-        
+    char input[2];
+    char validYesNo = ' ';
 
-        // convert to lower case
-        input[0] = tolower(input[0]);
-        fgetsRemoveNewLine(input);
-        
-        if(input[0] == 'n'|| input[0] == 'y'){
+        do {
+            puts("Please enter (y)es or (n)o:");
+            fgets(input, sizeof(input), stdin);
             
-            validInput = 1;
-            
-        } else {
-            
-            puts("You did not enter a y or n.\n");
-        }
-        
-        
-    } // end of while
-    return input[0];
+            validYesNo = tolower(input[0]);
+            fgetsRemoveNewLine(&validYesNo);
+
+        } while (validYesNo != 'y' && validYesNo != 'n');
+
+        return  validYesNo;
+
 }
 
 double calculateFare(rideShare *rideSharePtr) {
@@ -516,66 +518,84 @@ void displayRideShareRatings(unsigned int *surveyCount, const unsigned int surve
        }
 } // displayRideShareRatings
 
-// couldnt get to work in enough time
-void getRideShareRatings(unsigned int survey[][SURVEY_CATEGORIES], unsigned int *surveyCount, size_t total_categories) {
+void getRideShareRatings(unsigned int survey[][SURVEY_CATEGORIES], unsigned int *surveyCount) {
+    printf("Enter your ratings for the ride-sharing experience:\n");
     
-    for(size_t categories = 0; categories < total_categories; categories++) {
-      
-        for(size_t categories = 0; categories < total_categories; categories++) {
-            double rating;
-            bool validInput = false;
-            do {
-                printf("Enter your rating for %s (1-5): ", surveyCategories[categories]);
-                if (!scanDouble("", &rating)) {
-                    printf("Invalid input. Please enter a number between 1 and 5.\n");
-                } else if (rating < 1.0 || rating > 5.0) {
-                    printf("Invalid rating. Please enter a number between 1 and 5.\n");
-                } else {
-                    validInput = true;
-                }
-            } while (!validInput); // Loop until valid input is provided
+    // Loop through each survey category
+    for (size_t category = 0; category < SURVEY_CATEGORIES; category++) {
+        unsigned int rating;
+        bool validInput = false;
+        
+        // Keep prompting until a valid rating is provided
+        do {
+            printf("Rate %s (1-5): ", surveyCategories[category]);
+            if (scanf("%u", &rating) != 1 || rating < 1 || rating > 5) {
+                printf("Invalid input. Please enter a number between 1 and 5.\n");
+                while (getchar() != '\n'); // Clear input buffer
+            } else {
+                validInput = true;
+            }
+        } while (!validInput); // Loop until valid input is provided
 
-            survey[*surveyCount][categories] = (unsigned int)rating;
-            (*surveyCount)++;
-        }
-   
+        // Store the rating in the survey array
+        survey[*surveyCount][category] = rating;
     }
-    
-    puts("");
-    
-} // getRideShareRatings
+
+    // Increment the survey count
+    (*surveyCount)++;
+}
 
 void ridersMode(rideShare *rideSharePtr){
     
-    //3.1
+    
+    //3.1 Display welcome message and rideshare rating
+    printf("Welcome to the %s. We can only provide services for rides from 1 to 100 miles.\n\n", rideSharePtr -> organizationName);
     displayRideShareRatings(&(rideSharePtr->surveyCount), rideSharePtr->rentalSurvey, rideSharePtr);
     
-    printf("Do you want to request a ride from %s " , rideSharePtr -> organizationName);
-    getValidYN();
+    //3.2 Prompt to request a ride
+    //printf("Do you want to request a ride from %s \n" , rideSharePtr -> organizationName);
+    char choice;
+    do {
+        printf("Do you want to request a ride from %s \n" , rideSharePtr -> organizationName);
+        choice = getValidYN();
+        
+        if(choice != 'y' && choice != 'n') {
+            printf("You did not enter a valid option. Please enter 'y' for yes or 'n' for no.\n");
+            //printf("Do you want to request a ride from %s? ", rideSharePtr->organizationName);
+        }
+        
+    } while (choice != 'y' && choice!= 'n');
     
-    if(getValidYN() == 'n') {
-        displayRideShareRatings(&(rideSharePtr->surveyCount), rideSharePtr->rentalSurvey, rideSharePtr);
+    if(choice == 'n') {
+        // go back to 3.1 for the next customer
+        ridersMode(rideSharePtr);
         
     } else {
-        //3.3
+        //3.3 Get the number of miles
         
         puts("Enter the number of miles to your destination: ");
         rideSharePtr-> miles = getValidDoubleSentinel(MIN_MILES, MAX_MILES, SENTINAL_VALUE);
+        
         if(rideSharePtr-> miles == SENTINAL_VALUE) {
+            // prompt for admin login if sentinel value is entered
             bool loginStatus = adminLogin();
-            if(loginStatus == true) {
+            if(loginStatus) {
                 puts("Admin Shutdown");
-                // go to 4.1 display report
+                
+                // go to 4.1 display report & shut down return;
             }
             
         } else {
-            
+            // calculate minutes
             int minMinutes = (int)(MIN_RAND_MINUTES_FACTOR * rideSharePtr-> miles);
             int maxMinutes = (int)(MAX_RAND_MINUTES_FACTOR * rideSharePtr-> miles);
             
             rideSharePtr-> minutes = calculateRandomNumber(minMinutes, maxMinutes);
             
+            // calculate ride fare
             calculateFare(rideSharePtr);
+            
+            // display ride faer charge
             printFare (rideSharePtr);
             
             
@@ -586,25 +606,28 @@ void ridersMode(rideShare *rideSharePtr){
             
             // 3.4 get ratings
             puts("Do you want to rate your rideShare experience?");
-            if(getValidYN() == 'n') {
+            char rateChoice;
+            do {
+                rateChoice = getValidYN();
+                if(rateChoice != 'y' && rateChoice != 'n') {
+                    printf("You did not enter a valid option. Please enter 'y' for yes or 'n' for no.\n");
+                    printf("Do you want to rate your rideshare experience? ");
+                }
+            } while (rateChoice != 'y' && rateChoice != 'n');
+            
+            if(rateChoice == 'y') {
                 puts("Thanks for riding with us");
-                //3.1
-                displayRideShareRatings(&(rideSharePtr->surveyCount), rideSharePtr->rentalSurvey, rideSharePtr);
+                //3.1 get ratings from the rider
+                getRideShareRatings(rideSharePtr->rentalSurvey, &(rideSharePtr->surveyCount));
+                // go back to 3.1 for the next customer
+                ridersMode(rideSharePtr);
+
                 
             } else {
-                getRideShareRatings(rideSharePtr->rentalSurvey, &(rideSharePtr->surveyCount), SURVEY_CATEGORIES);
-                //3.1
-                displayRideShareRatings(&(rideSharePtr->surveyCount), rideSharePtr->rentalSurvey, rideSharePtr);
-                
+                printf("Thanks for riding with us. \n");
             }
-
         }
-        
-        
-        
     }
-    
-    
 }
                                     
 
