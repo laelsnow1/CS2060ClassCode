@@ -41,7 +41,7 @@ const char *surveyCategories[SURVEY_CATEGORIES] = {"Safety", "Cleanliness", "Com
 
 
 // structure to hold ride share business info
-typedef struct RideShareInfo {
+typedef struct rideShare {
     float baseFare;
     float costPerMinute;
     float costPerMile;
@@ -80,8 +80,8 @@ double getValidDoubleSentinel(int min, int max, int sentinel); // for miles  nee
 char getValidYN(void); // need
 void displayRideShareDetails (const rideShare *rideSharePtr);
 
-rideShare *sortRideShares(rideShare *head);
-void displayRideShareRatingsAlpha(rideShare *head);
+// rideShare *sortRideShares(rideShare *rideSharePtr);
+void displayRideShareRatingsAlpha(rideShare *rideSharePtr);
 
 
 
@@ -92,10 +92,10 @@ int main(int argc, const char * argv[]) {
        srand((unsigned int) time(NULL));
     
     
-     RideShareInfo rideShare;
+    rideShare rideShareInfo;
     
     
-    rideShare.head = NULL; // head pointer to NULL
+    rideShareInfo.head = NULL; // head pointer to NULL
     
     
     // STEP 1:
@@ -104,10 +104,10 @@ int main(int argc, const char * argv[]) {
         printf("Login Successful\n\n");
         
         // user 2 admin Ride Share set up
-        setUpRideShare(&rideShare);
+        setUpRideShare(&rideShareInfo);
         
         // sort the rides alphabetically
-        rideShare.head = sortRideShares(&rideShare.head);
+        
         
     } else {
         printf("Exiting RideShare\n");
@@ -115,11 +115,11 @@ int main(int argc, const char * argv[]) {
         return 0;
     }
     
-    // display ride share info
-    displayRideShareRatingsAlpha(rideShareInfo.head);
+    // 3.1 display ride share name and ratings
+   // displayRideShareRatingsAlpha(&rideShareInfo);
   
-    //3.1 Rider mode
-    //ridersMode(&rideShareInfo);
+    // Rider mode
+    ridersMode(&rideShareInfo);
 
     
 
@@ -259,12 +259,12 @@ void setUpRideShare (rideShare *rideSharePtr){
         rideShare *newRideInfo = (rideShare *)malloc(sizeof(rideShare)); // allocate enough memory
         if (newRideInfo == NULL) {
             printf("Memory FAILED!!");
-            // exit?
+            exit (EXIT_FAILURE); // exit?
         }
         
         printf("Enter the RideShare Organization Name:\n ");
         fgets(newRideInfo -> organizationName, STRING_LENGTH, stdin);
-        fgetsRemoveNewLine(rideSharePtr -> organizationName);
+        fgetsRemoveNewLine(newRideInfo-> organizationName);
         
         printf("Enter the base fare: ");
         newRideInfo -> baseFare = getValidDouble(MIN_SET_UP, MAX_SET_UP);
@@ -287,7 +287,7 @@ void setUpRideShare (rideShare *rideSharePtr){
             rideSharePtr ->head = newRideInfo;
             rideSharePtr -> tail = newRideInfo;
         } else {
-            rideSharePtr -> tail -> next = newRideInfo;
+            rideSharePtr ->tail->next = newRideInfo;
             rideSharePtr -> tail = newRideInfo;
             
         }
@@ -480,6 +480,10 @@ void getRideShareRatings(unsigned int survey[][SURVEY_CATEGORIES], unsigned int 
         puts("Thanks for riding with us");
         //3.1 get ratings from the rider
         
+        // increment the survey count
+       // rideSharePtr -> surveyCount++;
+        (*surveyCount)++;
+        
         printf("Enter your ratings for the ride-sharing experience:\n");
         
         // Loop through each survey category
@@ -502,17 +506,17 @@ void getRideShareRatings(unsigned int survey[][SURVEY_CATEGORIES], unsigned int 
             survey[*surveyCount][category] = rating;
         }
 
-        // Increment the survey count
-        (*surveyCount)++;
+        // Increment the survey count for specific organization
+        //rideSharePtr -> surveyCount++;
         
         // go back to 3.1 for the next customer
         ridersMode(rideSharePtr);
-
+       // displayRideShareRatingsAlpha(rideSharePtr);
         
     } else {
         printf("Thanks for riding with us. \n\n");
-        // go back to 3.1 for the next customer
-        ridersMode(rideSharePtr);
+        // 3.1 display ride share name and ratings
+        displayRideShareRatingsAlpha(rideSharePtr);
     }
     
     
@@ -524,137 +528,185 @@ void getRideShareRatings(unsigned int survey[][SURVEY_CATEGORIES], unsigned int 
 void ridersMode(rideShare *rideSharePtr){
     
     
-    //3.1 Display welcome message and rideshare rating
-    printf("Welcome to the %s. We can only provide services for rides from 1 to 100 miles.\n\n", rideSharePtr -> organizationName);
-    displayRideShareRatings(&(rideSharePtr->surveyCount), rideSharePtr->rentalSurvey, rideSharePtr);
     
-    //3.2 Prompt to request a ride
-    //printf("Do you want to request a ride from %s \n" , rideSharePtr -> organizationName);
-    char choice;
+    // 3.1 display ride share name and ratings
+    displayRideShareRatingsAlpha(rideSharePtr);
+    
+    //3.2 Enter the name of the Ride Share
+    char rideChoice[STRING_LENGTH];
+    bool found = false;
+    
     do {
-        printf("Do you want to request a ride from %s \n" , rideSharePtr -> organizationName);
-        choice = getValidYN();
+        printf("Enter the name of the Ride Share: ");
+        fgets(rideChoice, STRING_LENGTH, stdin);
+        fgetsRemoveNewLine(rideChoice);
         
-        if(choice != 'y' && choice != 'n') {
-            printf("You did not enter a valid option. Please enter 'y' for yes or 'n' for no.\n");
-            //printf("Do you want to request a ride from %s? ", rideSharePtr->organizationName);
+        // Traverse the linked list to check if correct
+        rideShare *current = rideSharePtr -> head;
+        while (current != NULL) {
+            if(strcmp(rideChoice, current -> organizationName) == 0) {
+                found = true;
+                // break ?
+            }
+            current = current -> next;
         }
         
-    } while (choice != 'y' && choice!= 'n');
-    
-    if(choice == 'n') {
-        // go back to 3.1 for the next customer
-        ridersMode(rideSharePtr);
-        
-    } else {
-        //3.3 Get the number of miles
-        
-        puts("Enter the number of miles to your destination: ");
-        rideSharePtr-> miles = getValidDoubleSentinel(MIN_MILES, MAX_MILES, SENTINAL_VALUE);
-        
-        if(rideSharePtr-> miles == SENTINAL_VALUE) {
-            // prompt for admin login if sentinel value is entered
-            bool loginStatus = adminLogin();
-            if(loginStatus) {
-                puts("Admin Shutdown");
-                
-                // go to 4.1 display report & shut down return;
-            }
+        if(!found) {
+            printf("Incorrect name try again\n\n");
+            // 3.1 display ride share name and ratings
+            displayRideShareRatingsAlpha(rideSharePtr);
             
         } else {
-            // calculate minutes
-            int minMinutes = (int)(MIN_RAND_MINUTES_FACTOR * rideSharePtr-> miles);
-            int maxMinutes = (int)(MAX_RAND_MINUTES_FACTOR * rideSharePtr-> miles);
+            // 3.3 Get the number of miles
+            puts("Enter the number of miles to your destination: ");
+            rideSharePtr-> miles = getValidDoubleSentinel(MIN_MILES, MAX_MILES, SENTINAL_VALUE);
             
-            rideSharePtr-> minutes = calculateRandomNumber(minMinutes, maxMinutes);
-            
-            // calculate ride fare
-            calculateFare(rideSharePtr);
-            
-            // display ride faer charge
-            printFare (rideSharePtr);
-            
-            
-            // increment totals
-            rideSharePtr -> totalMiles += rideSharePtr -> miles;
-            rideSharePtr -> totalMinutes += rideSharePtr -> minutes;
-            rideSharePtr -> totalFare += rideSharePtr -> rideFare;
-            
-            
-            // 3.4 get ratings
-            getRideShareRatings(rideSharePtr->rentalSurvey, &(rideSharePtr->surveyCount), rideSharePtr);
-        }
-    }
-}
-                                    
-
-rideShare *sortRideShares(rideShare *head){
-    
-    // Check if the list is empty or has only one node
-        if (head == NULL || head->next == NULL) {
-            return head;
-        }
-
-        // Initialize three pointers to traverse the list
-        rideShare *current = head;
-        rideShare *nextNode = NULL;
-        rideShare *prevNode = NULL;
-
-        // Bubble sort algorithm to sort the linked list alphabetically
-        bool swapped;
-        do {
-            swapped = false;
-            current = head;
-            while (current->next != NULL) {
-                nextNode = current->next;
-                // Compare the organization names of adjacent nodes
-                if (strcmp(current->organizationName, nextNode->organizationName) > 0) {
-                    // Swap nodes if they are in the wrong order
-                    if (prevNode != NULL) {
-                        prevNode->next = nextNode;
-                    } else {
-                        head = nextNode;
-                    }
-                    current->next = nextNode->next;
-                    nextNode->next = current;
-                    prevNode = nextNode;
-                    swapped = true;
-                } else {
-                    prevNode = current;
-                    current = current->next;
+            if(rideSharePtr-> miles == SENTINAL_VALUE) {
+                // prompt for admin login if sentinel value is entered
+                bool loginStatus = adminLogin();
+                if(loginStatus) {
+                    puts("Admin Shutdown");
+                    
+                    // go to 4.1 display report & shut down return;
                 }
+                
+            } else {
+                // calculate minutes
+                int minMinutes = (int)(MIN_RAND_MINUTES_FACTOR * rideSharePtr-> miles);
+                int maxMinutes = (int)(MAX_RAND_MINUTES_FACTOR * rideSharePtr-> miles);
+                
+                rideSharePtr-> minutes = calculateRandomNumber(minMinutes, maxMinutes);
+                
+                // calculate ride fare
+                calculateFare(rideSharePtr);
+                
+                // display ride faer charge
+                printFare (rideSharePtr);
+                
+                
+                // increment totals
+                rideSharePtr -> totalMiles += rideSharePtr -> miles;
+                rideSharePtr -> totalMinutes += rideSharePtr -> minutes;
+                rideSharePtr -> totalFare += rideSharePtr -> rideFare;
+                
+                
+                // 3.4 get ratings
+                getRideShareRatings(rideSharePtr->rentalSurvey, &(rideSharePtr->surveyCount), rideSharePtr);
+                
+                //3.1  Display updated ratings
+                displayRideShareRatingsAlpha(rideSharePtr);
+                
             }
-        } while (swapped);
-
-        return head;
-}
-
-void displayRideShareRatingsAlpha(rideShare *head) {
+            
+        }
+    } while (!found);
+        /*
+         choice = getValidYN();
+         
+         if(choice != 'y' && choice != 'n') {
+         printf("You did not enter a valid option. Please enter 'y' for yes or 'n' for no.\n");
+         //printf("Do you want to request a ride from %s? ", rideSharePtr->organizationName);
+         }
+         
+         } while (choice != 'y' && choice!= 'n');
+         
+         if(choice == 'n') {
+         // go back to 3.1 for the next customer
+         ridersMode(rideSharePtr);
+         
+         } else {
+         //3.3 Get the number of miles
+         
+         puts("Enter the number of miles to your destination: ");
+         rideSharePtr-> miles = getValidDoubleSentinel(MIN_MILES, MAX_MILES, SENTINAL_VALUE);
+         
+         if(rideSharePtr-> miles == SENTINAL_VALUE) {
+         // prompt for admin login if sentinel value is entered
+         bool loginStatus = adminLogin();
+         if(loginStatus) {
+         puts("Admin Shutdown");
+         
+         // go to 4.1 display report & shut down return;
+         }
+         
+         } else {
+         // calculate minutes
+         int minMinutes = (int)(MIN_RAND_MINUTES_FACTOR * rideSharePtr-> miles);
+         int maxMinutes = (int)(MAX_RAND_MINUTES_FACTOR * rideSharePtr-> miles);
+         
+         rideSharePtr-> minutes = calculateRandomNumber(minMinutes, maxMinutes);
+         
+         // calculate ride fare
+         calculateFare(rideSharePtr);
+         
+         // display ride faer charge
+         printFare (rideSharePtr);
+         
+         
+         // increment totals
+         rideSharePtr -> totalMiles += rideSharePtr -> miles;
+         rideSharePtr -> totalMinutes += rideSharePtr -> minutes;
+         rideSharePtr -> totalFare += rideSharePtr -> rideFare;
+         
+         
+         // 3.4 get ratings
+         getRideShareRatings(rideSharePtr->rentalSurvey, &(rideSharePtr->surveyCount), rideSharePtr);
+         }
+         }
+         */
+    }
     
-    // Sort the linked list alphabetically by organization name
-    head = sortRideShares(head);
-
-    // Traverse the linked list and display the ratings for each ride share
-    rideShare *current = head;
-    while (current != NULL) {
-        printf("%s Ratings\n", current->organizationName);
-        if (current->surveyCount == 0) {
-            puts("No Ratings Currently");
-        } else {
-            printf("Survey\t");
-            for (size_t j = 0; j < SURVEY_CATEGORIES; j++) {
-                printf("%s\t", surveyCategories[j]);
+    
+    
+    
+    void displayRideShareRatingsAlpha(rideShare *rideSharePtr) {
+        
+        // Sort the linked list alphabetically by organization name
+        rideShare *current = rideSharePtr->head;
+        rideShare *temp = NULL;
+        rideShare *sorted = NULL;
+        
+        while (current != NULL) {
+            rideShare *next = current->next;
+            if (sorted == NULL || strcmp(current->organizationName, sorted->organizationName) < 0) {
+                current->next = sorted;
+                sorted = current;
+            } else {
+                rideShare *search = sorted;
+                while (search->next != NULL && strcmp(search->next->organizationName, current->organizationName) < 0) {
+                    search = search->next;
+                }
+                current->next = search->next;
+                search->next = current;
             }
-            printf("\n");
-
-            for (size_t i = 0; i < current->surveyCount; i++) {
-                printf("%zu\t", i + 1);
+            current = next;
+        }
+        rideSharePtr->head = sorted;
+        
+        // Traverse the linked list and display the ratings for each ride share
+        current = rideSharePtr->head;
+        while (current != NULL) {
+            printf("%s Ratings\n", current->organizationName);
+            if (current->surveyCount == 0) {
+                puts("No Ratings Currently\n\n");
+            } else {
+                printf("Survey\t");
                 for (size_t j = 0; j < SURVEY_CATEGORIES; j++) {
-                    printf("%u\t", current->rentalSurvey[i][j]);
+                    printf("%s\t", surveyCategories[j]);
                 }
                 printf("\n");
+                
+                
+                // dispay the survey ratings
+                for (size_t i = 0; i < current->surveyCount; i++) {
+                    printf("%zu\t", i + 1);
+                    for (size_t j = 0; j < SURVEY_CATEGORIES; j++) {
+                        printf("%u\t", current->rentalSurvey[i][j]);
+                    }
+                    printf("\n");
+                }
             }
+            // move to the next org. in  linked list
+            current = current->next;
         }
-        current = current->next;
     }
-}
