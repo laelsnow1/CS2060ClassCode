@@ -79,8 +79,8 @@ double getValidInput(char *setup, double min, double max);
 double getValidDoubleSentinel(int min, int max, int sentinel); // for miles  need
 char getValidYN(void); // need
 void displayRideShareDetails (const rideShare *rideSharePtr);
+void writeSummaryToFile(rideShare *rideSharePtr);
 
-// rideShare *sortRideShares(rideShare *rideSharePtr);
 void displayRideShareRatingsAlpha(rideShare *rideSharePtr);
 
 
@@ -98,7 +98,7 @@ int main(int argc, const char * argv[]) {
     rideShareInfo.head = NULL; // head pointer to NULL
     
     
-    // STEP 1:
+    
     // 1.1 get valid id and pw
     if( adminLogin()) {
         printf("Login Successful\n\n");
@@ -249,9 +249,6 @@ void setUpRideShare (rideShare *rideSharePtr){
     
     printf("Set up rideshare information\n");
     
-    //rideShare *head = NULL;
-    //rideShare *tail = NULL;
-    
     char addOrganization;
     
     do {
@@ -304,16 +301,7 @@ void setUpRideShare (rideShare *rideSharePtr){
         current = current -> next;
     }
     
-    
-    
-    // Free allocated memory
-   // current = head;
-    //while(current != NULL) {
-      //  rideShare *temp = current;
-        //current = current->next;
-      //  free(temp);
-   // }
-    
+
 }
 
 void displayRideShareDetails (const rideShare *rideSharePtr) {
@@ -563,11 +551,11 @@ void ridersMode(rideShare *rideSharePtr){
             
             if(rideSharePtr-> miles == SENTINAL_VALUE) {
                 // prompt for admin login if sentinel value is entered
-                bool loginStatus = adminLogin();
-                if(loginStatus) {
+                if( adminLogin()){
                     puts("Admin Shutdown");
                     
                     // go to 4.1 display report & shut down return;
+                    writeSummaryToFile(rideSharePtr);
                 }
                 
             } else {
@@ -600,62 +588,8 @@ void ridersMode(rideShare *rideSharePtr){
             
         }
     } while (!found);
-        /*
-         choice = getValidYN();
-         
-         if(choice != 'y' && choice != 'n') {
-         printf("You did not enter a valid option. Please enter 'y' for yes or 'n' for no.\n");
-         //printf("Do you want to request a ride from %s? ", rideSharePtr->organizationName);
-         }
-         
-         } while (choice != 'y' && choice!= 'n');
-         
-         if(choice == 'n') {
-         // go back to 3.1 for the next customer
-         ridersMode(rideSharePtr);
-         
-         } else {
-         //3.3 Get the number of miles
-         
-         puts("Enter the number of miles to your destination: ");
-         rideSharePtr-> miles = getValidDoubleSentinel(MIN_MILES, MAX_MILES, SENTINAL_VALUE);
-         
-         if(rideSharePtr-> miles == SENTINAL_VALUE) {
-         // prompt for admin login if sentinel value is entered
-         bool loginStatus = adminLogin();
-         if(loginStatus) {
-         puts("Admin Shutdown");
-         
-         // go to 4.1 display report & shut down return;
-         }
-         
-         } else {
-         // calculate minutes
-         int minMinutes = (int)(MIN_RAND_MINUTES_FACTOR * rideSharePtr-> miles);
-         int maxMinutes = (int)(MAX_RAND_MINUTES_FACTOR * rideSharePtr-> miles);
-         
-         rideSharePtr-> minutes = calculateRandomNumber(minMinutes, maxMinutes);
-         
-         // calculate ride fare
-         calculateFare(rideSharePtr);
-         
-         // display ride faer charge
-         printFare (rideSharePtr);
-         
-         
-         // increment totals
-         rideSharePtr -> totalMiles += rideSharePtr -> miles;
-         rideSharePtr -> totalMinutes += rideSharePtr -> minutes;
-         rideSharePtr -> totalFare += rideSharePtr -> rideFare;
-         
-         
-         // 3.4 get ratings
-         getRideShareRatings(rideSharePtr->rentalSurvey, &(rideSharePtr->surveyCount), rideSharePtr);
-         }
-         }
-         */
+        
     }
-    
     
     
     
@@ -663,7 +597,6 @@ void ridersMode(rideShare *rideSharePtr){
         
         // Sort the linked list alphabetically by organization name
         rideShare *current = rideSharePtr->head;
-        rideShare *temp = NULL;
         rideShare *sorted = NULL;
         
         while (current != NULL) {
@@ -710,3 +643,50 @@ void ridersMode(rideShare *rideSharePtr){
             current = current->next;
         }
     }
+
+void writeSummaryToFile(rideShare *rideSharePtr){
+    
+    
+    char fileName[STRING_LENGTH];
+    FILE *filePtr;
+
+       // Replace spaces in organization name with underscores for file name
+       for (size_t i = 0; rideSharePtr->organizationName[i] != '\0'; i++) {
+           if (rideSharePtr->organizationName[i] == ' ') {
+               fileName[i] = '_';
+           } else {
+               fileName[i] = rideSharePtr->organizationName[i];
+           }
+       }
+       fileName[strlen(rideSharePtr->organizationName)] = '\0';
+
+       // Open file for writing
+       filePtr = fopen(fileName, "w");
+       if (filePtr == NULL) {
+           printf("Error: Unable to create file.\n");
+           return;
+       }
+
+       // Write summary header to file
+       fprintf(filePtr, "[%s] Summary Report\n\n", rideSharePtr->organizationName);
+
+       // Write ride summary to file
+       fprintf(filePtr, "Rider\tNumber of Miles\tNumber of Minutes\tRide Fare Amount\n");
+       fprintf(filePtr, "%d\t%.1f\t\t%d\t\t\t$%.2f\n", rideSharePtr->surveyCount, rideSharePtr->miles, rideSharePtr->minutes, rideSharePtr->rideFare);
+
+       // Calculate and write average ratings to file
+       fprintf(filePtr, "\nCategory Rating Averages\n");
+       for (size_t i = 0; i < SURVEY_CATEGORIES; i++) {
+           unsigned int sum = 0;
+           for (size_t j = 0; j < rideSharePtr->surveyCount; j++) {
+               sum += rideSharePtr->rentalSurvey[j][i];
+           }
+           double averageRating = (double)sum / rideSharePtr->surveyCount;
+           fprintf(filePtr, "%zu. %s\t%.1f\n", i + 1, surveyCategories[i], averageRating);
+       }
+
+       fprintf(filePtr, "\nExiting RideShare Program\n");
+
+       // Close file
+       fclose(filePtr);
+   }
